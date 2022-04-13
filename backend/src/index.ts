@@ -49,13 +49,19 @@ app.post('/register', async (req, res) => {
     return;
   }
 
-  const hashedPassword = bcrypt.hash(req.body.password, 10);
-  const newUser = new User({
-    username: req.body.username,
-    password: hashedPassword,
+  User.findOne({ username }, async (err: Error, doc: any) => {
+    if (err) throw err;
+    if (doc) res.send('User already exists');
+    if (!doc) {
+      const hashedPassword = bcrypt.hash(password, 10);
+      const newUser = new User({
+        username: username,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      res.send('Success');
+    }
   });
-  await newUser.save();
-  res.send('Success');
 });
 
 app.listen(4000, () => {
