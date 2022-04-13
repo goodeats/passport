@@ -10,7 +10,10 @@
     "@types/express-session": "^1.17.4",
     "@types/mongoose": "^5.11.97",
     "@types/passport": "^1.0.7",
-    "@types/passport-local": "^1.0.34"
+    "@types/passport-local": "^1.0.34",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
