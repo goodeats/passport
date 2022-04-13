@@ -16,7 +16,8 @@
     "typescript": "^4.6.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec ts-node src/index.ts"
   },
   "keywords": [],
   "author": "Pat Needham <patrick.h.needham@gmail.com> (https://patneedham.me/)",
