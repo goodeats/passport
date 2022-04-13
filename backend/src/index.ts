@@ -10,6 +10,8 @@ import dotenv from 'dotenv';
 require('dotenv').config();
 import User from './User';
 import { UserInterface } from './Interface/UserInterface';
+const LocalStrategy = passportlocal.Strategy;
+
 console.log('starting server...');
 
 // database
@@ -36,6 +38,40 @@ app.use(
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
+// passport
+// https://www.passportjs.org/concepts/authentication/strategies/
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    User.findOne({ username: username }, (err: Error, user: any) => {
+      if (err) throw err;
+      if (!user) return done(null, false);
+      bcrypt.compare(password, user.password, (err, result) => {
+        if (err) throw err;
+        if (result === true) {
+          return done(null, user);
+        } else {
+          return done(null, false);
+        }
+      });
+    });
+  })
+);
+
+// Understanding passport serialize deserialize
+// https://stackoverflow.com/a/27637668
+passport.serializeUser((user: any, callback) => {
+  callback(null, user.id);
+});
+
+passport.deserializeUser((id: string, callback) => {
+  User.findOne({ _id: id }, (err: Error, user: any) => {
+    const userInformation = {
+      username: user.username,
+      isAdmin: user.isAdmin,
+    };
+    callback(err, userInformation);
+  });
+});
 
 // routes
 app.post('/register', async (req, res) => {
@@ -73,6 +109,17 @@ app.post('/register', async (req, res) => {
       }
     }
   );
+});
+
+app.post(
+  '/login',
+  passport.authenticate('local', (req, res) => {
+    res.send('Successfully Authenticated');
+  })
+);
+
+app.get('/user', (req, res) => {
+  res.send(req.user);
 });
 
 app.listen(4000, () => {
