@@ -113,9 +113,13 @@ app.post('/register', async (req, res) => {
 
 app.post(
   '/login',
-  passport.authenticate('local', (req, res) => {
+  passport.authenticate('local', {
+    failureRedirect: '/login',
+    failureMessage: true,
+  }),
+  (req, res) => {
     res.send('Successfully Authenticated');
-  })
+  }
 );
 
 app.get('/user', (req, res) => {
