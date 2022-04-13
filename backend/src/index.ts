@@ -9,6 +9,7 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 require('dotenv').config();
 import User from './User';
+import { UserInterface } from './Interface/UserInterface';
 console.log('starting server...');
 
 // database
@@ -49,19 +50,29 @@ app.post('/register', async (req, res) => {
     return;
   }
 
-  User.findOne({ username }, async (err: Error, doc: any) => {
-    if (err) throw err;
-    if (doc) res.send('User already exists');
-    if (!doc) {
-      const hashedPassword = bcrypt.hash(password, 10);
-      const newUser = new User({
-        username: username,
-        password: hashedPassword,
-      });
-      await newUser.save();
-      res.send('Success');
+  User.findOne(
+    { username },
+    async (err: Error, doc: UserInterface) => {
+      if (err) throw err;
+      if (doc) res.send('User already exists');
+      if (!doc) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+          username: username,
+          password: hashedPassword,
+        });
+        await newUser
+          .save()
+          .then((user: UserInterface) => {
+            res.send('Success');
+          })
+          .catch((err: Error) => {
+            console.log(err);
+            res.status(400).send('Bad request');
+          });
+      }
     }
-  });
+  );
 });
 
 app.listen(4000, () => {
