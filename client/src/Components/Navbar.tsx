@@ -9,14 +9,14 @@ export default function Navbar() {
     <div className='NavContainer'>
       { ctx ? (
         <>
-        <Link to="/logout">Logout</Link>
-        <Link to="/admin">Admin</Link>
-        <Link to="/profile">Profile</Link>
+          <Link to="/logout">Logout</Link>
+          { ctx.isAdmin && <Link to="/admin">Admin</Link> }
+          <Link to="/profile">Profile</Link>
         </>
       ) : (
         <>
-        <Link to="/login">Login</Link>
-        <Link to="/register">Register</Link>
+          <Link to="/login">Login</Link>
+          <Link to="/register">Register</Link>
         </>
       )}
       <Link to="/">Home</Link>
