@@ -1,10 +1,5 @@
-import React, { useContext } from 'react'
-import { myContext } from './ContextPage'
+import React from 'react';
 
 export default function HomePage() {
-  const ctx = useContext(myContext);
-  console.log(ctx)
-  return (
-    <div>HomePage</div>
-  )
+  return <div>HomePage</div>;
 }
