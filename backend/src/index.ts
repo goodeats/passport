@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import passport from 'passport';
 import passportlocal from 'passport-local';
@@ -73,6 +73,29 @@ passport.deserializeUser((id: string, callback) => {
   });
 });
 
+const isAdminMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user: any = req.user;
+  if (user) {
+    User.findOne(
+      { username: user.username },
+      (err: Error, doc: UserInterface) => {
+        if (err) throw err;
+        if (doc?.isAdmin) {
+          next();
+        } else {
+          res.send('Sorry, only admins allowed');
+        }
+      }
+    );
+  } else {
+    res.send('Sorry, not logged in');
+  }
+};
+
 // routes
 app.post('/register', async (req, res) => {
   const { username, password } = req?.body;
@@ -129,6 +152,31 @@ app.get('/logout', function (req, res) {
 
 app.get('/user', (req, res) => {
   res.send(req.user);
+});
+
+// clone() fixes MongooseError: Query was already executed bug
+// https://stackoverflow.com/a/69430142
+app.get('/getAllUsers', isAdminMiddleware, async (req, res) => {
+  await User.find({}, (err: Error, data: UserInterface) => {
+    if (err) throw err;
+    res.send(data);
+  })
+    .clone()
+    .catch(function (err) {
+      console.log(err);
+    });
+});
+
+app.post('/deleteUser', isAdminMiddleware, async (req, res) => {
+  const { id } = req.body;
+  await User.findByIdAndDelete(id, (err: Error) => {
+    if (err) throw err;
+    res.send('success');
+  })
+    .clone()
+    .catch(function (err) {
+      console.log(err);
+    });
 });
 
 app.listen(4000, () => {
