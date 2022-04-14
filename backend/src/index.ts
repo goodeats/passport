@@ -122,6 +122,11 @@ app.post(
   }
 );
 
+app.get('/logout', function (req, res) {
+  req.logout();
+  res.send('Successfully logged out');
+});
+
 app.get('/user', (req, res) => {
   res.send(req.user);
 });
