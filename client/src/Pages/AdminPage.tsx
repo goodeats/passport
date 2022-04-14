@@ -19,7 +19,7 @@ export default function AdminPage() {
           })
         );
       });
-  }, []);
+  }, [ctx.username]);
 
   const deleteUser = () => {
     const user = data.find(
