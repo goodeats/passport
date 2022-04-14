@@ -1,7 +1,9 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { myContext } from './ContextPage';
 
 export default function AdminPage() {
+  const ctx = useContext(myContext);
   const [data, setData] = useState<any>();
   const [selectedUser, setSelectedUser] = useState<string>();
 
@@ -10,8 +12,12 @@ export default function AdminPage() {
       .get('http://localhost:4000/getAllUsers', {
         withCredentials: true,
       })
-      .then((res) => {
-        setData(res.data);
+      .then((res: any) => {
+        setData(
+          res.data.filter((user: any) => {
+            return user.username !== ctx.username;
+          })
+        );
       });
   }, []);
 

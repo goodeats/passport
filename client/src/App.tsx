@@ -11,7 +11,6 @@ import RegisterPage from './Pages/RegisterPage';
 
 function App() {
   const ctx = useContext(myContext);
-  console.log('CONTEXT', ctx);
 
   return (
     <BrowserRouter>
