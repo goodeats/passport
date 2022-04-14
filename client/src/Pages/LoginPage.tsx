@@ -18,6 +18,7 @@ export default function LoginPage() {
       )
       .then((res) => {
         console.log(res.data);
+        window.location.href = '/';
       });
   };
 
