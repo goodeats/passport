@@ -12,8 +12,10 @@ export default function Navbar() {
         withCredentials: true,
       })
       .then((res) => {
-        console.log(res);
-        window.location.href = '/';
+        if (res.status === 200) {
+          // consider using routing history on another project
+          window.location.href = '/';
+        }
       });
   };
 

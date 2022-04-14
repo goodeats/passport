@@ -17,8 +17,9 @@ export default function LoginPage() {
         }
       )
       .then((res) => {
-        console.log(res.data);
-        window.location.href = '/';
+        if (res.status === 200) {
+          window.location.href = '/';
+        }
       });
   };
 
