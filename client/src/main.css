@@ -13,3 +13,8 @@
   align-items: center;
   justify-content: space-evenly;
 }
+
+.NavContainer a {
+  color: #fff;
+  text-decoration: none;
+}
