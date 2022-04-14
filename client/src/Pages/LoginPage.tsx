@@ -16,11 +16,16 @@ export default function LoginPage() {
           withCredentials: true,
         }
       )
-      .then((res) => {
-        if (res.status === 200) {
-          window.location.href = '/';
+      .then(
+        (res) => {
+          if (res.status === 200) {
+            window.location.href = '/';
+          }
+        },
+        () => {
+          console.log('failure');
         }
-      });
+      );
   };
 
   return (
