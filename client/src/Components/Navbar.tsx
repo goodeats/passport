@@ -1,16 +1,16 @@
-import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
-import { myContext } from '../Pages/ContextPage'
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { myContext } from '../Pages/ContextPage';
 
 export default function Navbar() {
   const ctx = useContext(myContext);
 
   return (
-    <div className='NavContainer'>
-      { ctx ? (
+    <div className="NavContainer">
+      {ctx ? (
         <>
           <Link to="/logout">Logout</Link>
-          { ctx.isAdmin && <Link to="/admin">Admin</Link> }
+          {ctx.isAdmin && <Link to="/admin">Admin</Link>}
           <Link to="/profile">Profile</Link>
         </>
       ) : (
@@ -21,5 +21,5 @@ export default function Navbar() {
       )}
       <Link to="/">Home</Link>
     </div>
-  )
+  );
 }
