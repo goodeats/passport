@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { myContext } from '../Pages/ContextPage';
@@ -11,7 +11,7 @@ export default function Navbar() {
       .get('http://localhost:4000/logout', {
         withCredentials: true,
       })
-      .then((res) => {
+      .then((res: AxiosResponse) => {
         if (res.status === 200) {
           // consider using routing history on another project
           window.location.href = '/';

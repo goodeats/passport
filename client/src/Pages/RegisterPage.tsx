@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import React, { useState } from 'react';
 
 export default function RegisterPage() {
@@ -16,7 +16,7 @@ export default function RegisterPage() {
           withCredentials: true,
         }
       )
-      .then((res) => {
+      .then((res: AxiosResponse) => {
         if (res.status === 200) {
           window.location.href = '/login';
         }

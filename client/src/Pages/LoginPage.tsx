@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import React, { useState } from 'react';
 
 export default function LoginPage() {
@@ -17,7 +17,7 @@ export default function LoginPage() {
         }
       )
       .then(
-        (res) => {
+        (res: AxiosResponse) => {
           if (res.status === 200) {
             window.location.href = '/';
           }
