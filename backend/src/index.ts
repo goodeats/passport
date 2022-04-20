@@ -68,6 +68,7 @@ passport.deserializeUser((id: string, callback) => {
     const userInformation = {
       username: user.username,
       isAdmin: user.isAdmin,
+      id: user._id,
     };
     callback(err, userInformation);
   });
@@ -157,9 +158,18 @@ app.get('/user', (req, res) => {
 // clone() fixes MongooseError: Query was already executed bug
 // https://stackoverflow.com/a/69430142
 app.get('/getAllUsers', isAdminMiddleware, async (req, res) => {
-  await User.find({}, (err: Error, data: UserInterface) => {
+  await User.find({}, (err: Error, data: UserInterface[]) => {
     if (err) throw err;
-    res.send(data);
+    const filteredUsers: any = [];
+    data.forEach((datum: any) => {
+      const userInformation = {
+        id: datum._id,
+        username: datum.username,
+        isAdmin: datum.isAdmin,
+      };
+      filteredUsers.push(userInformation);
+    });
+    res.send(filteredUsers);
   })
     .clone()
     .catch(function (err) {
