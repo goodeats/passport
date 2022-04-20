@@ -32,7 +32,7 @@ export default function RegisterPage() {
         onChange={(e) => setUsername(e.target.value)}
       />
       <input
-        type="text"
+        type="password"
         name="password"
         onChange={(e) => setPassword(e.target.value)}
       />

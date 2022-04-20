@@ -37,7 +37,7 @@ export default function LoginPage() {
         onChange={(e) => setUsername(e.target.value)}
       />
       <input
-        type="text"
+        type="password"
         name="password"
         onChange={(e) => setPassword(e.target.value)}
       />
