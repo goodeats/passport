@@ -1,15 +1,17 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import React, {
   createContext,
   PropsWithChildren,
   useEffect,
   useState,
 } from 'react';
+import { UserInterface } from '../interfaces/interfaces';
 
 // https://reactjs.org/docs/context.html
-export const myContext = createContext<any>({});
+// https://netbasal.com/getting-to-know-the-partial-type-in-typescript-ecfcfbc87cb6
+export const myContext = createContext<Partial<UserInterface>>({});
 export default function ContextPage(props: PropsWithChildren<any>) {
-  const [user, setUser] = useState<any>();
+  const [user, setUser] = useState<UserInterface>();
 
   // specified an empty array as a dependency to the useEffect React hook
   // So we have ensured that the fetch request happens only once
@@ -18,14 +20,13 @@ export default function ContextPage(props: PropsWithChildren<any>) {
   useEffect(() => {
     axios
       .get('http://localhost:4000/user', { withCredentials: true })
-      .then((res: { data: any }) => {
+      .then((res: AxiosResponse) => {
         setUser(res.data);
-        console.log('got user');
       });
   }, []);
 
   return (
-    <myContext.Provider value={user}>
+    <myContext.Provider value={user!}>
       {props.children}
     </myContext.Provider>
   );
