@@ -14,7 +14,6 @@ export default function AdminPage() {
         withCredentials: true,
       })
       .then((res: AxiosResponse) => {
-        console.log(res.data);
         setData(
           res.data.filter((user: UserInterface) => {
             return user.username !== ctx.username;
@@ -40,7 +39,7 @@ export default function AdminPage() {
   };
 
   return (
-    data && (
+    data! && (
       <div>
         <h1>Admin Page</h1>
         <select
