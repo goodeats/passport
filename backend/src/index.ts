@@ -6,10 +6,13 @@ import passportlocal from 'passport-local';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv/config';
 require('dotenv').config();
 import User from './User';
-import { UserInterface } from './Interface/UserInterface';
+import {
+  DatabaseUserInterface,
+  UserInterface,
+} from './Interface/UserInterface';
 const LocalStrategy = passportlocal.Strategy;
 
 console.log('starting server...');
@@ -18,7 +21,7 @@ console.log('starting server...');
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
 const cluster = process.env.MONGODB_CLUSTER;
-const db = `mongodb+srv://${username}:${password}@cluster0.6rmai.mongodb.net/${cluster}?retryWrites=true&w=majority`;
+const db: string = `mongodb+srv://${username}:${password}@cluster0.6rmai.mongodb.net/${cluster}?retryWrites=true&w=majority`;
 mongoose.connect(db, {}, (err: Error) => {
   if (err) throw err;
   console.log('connected to mongo!');
@@ -42,36 +45,46 @@ app.use(passport.session());
 // https://www.passportjs.org/concepts/authentication/strategies/
 passport.use(
   new LocalStrategy((username, password, done) => {
-    User.findOne({ username: username }, (err: Error, user: any) => {
-      if (err) throw err;
-      if (!user) return done(null, false);
-      bcrypt.compare(password, user.password, (err, result) => {
+    User.findOne(
+      { username: username },
+      (err: Error, user: DatabaseUserInterface) => {
         if (err) throw err;
-        if (result === true) {
-          return done(null, user);
-        } else {
-          return done(null, false);
-        }
-      });
-    });
+        if (!user) return done(null, false);
+        bcrypt.compare(
+          password,
+          user.password,
+          (err, result: boolean) => {
+            if (err) throw err;
+            if (result === true) {
+              return done(null, user);
+            } else {
+              return done(null, false);
+            }
+          }
+        );
+      }
+    );
   })
 );
 
 // Understanding passport serialize deserialize
 // https://stackoverflow.com/a/27637668
-passport.serializeUser((user: any, callback) => {
-  callback(null, user.id);
+passport.serializeUser((user: DatabaseUserInterface, callback) => {
+  callback(null, user._id);
 });
 
 passport.deserializeUser((id: string, callback) => {
-  User.findOne({ _id: id }, (err: Error, user: any) => {
-    const userInformation = {
-      username: user.username,
-      isAdmin: user.isAdmin,
-      id: user._id,
-    };
-    callback(err, userInformation);
-  });
+  User.findOne(
+    { _id: id },
+    (err: Error, user: DatabaseUserInterface) => {
+      const userInformation: UserInterface = {
+        username: user.username,
+        isAdmin: user.isAdmin,
+        id: user._id,
+      };
+      callback(err, userInformation);
+    }
+  );
 });
 
 const isAdminMiddleware = (
@@ -79,11 +92,11 @@ const isAdminMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const user: any = req.user;
+  const { user }: any = req;
   if (user) {
     User.findOne(
       { username: user.username },
-      (err: Error, doc: UserInterface) => {
+      (err: Error, doc: DatabaseUserInterface) => {
         if (err) throw err;
         if (doc?.isAdmin) {
           next();
@@ -112,7 +125,7 @@ app.post('/register', async (req, res) => {
 
   User.findOne(
     { username },
-    async (err: Error, doc: UserInterface) => {
+    async (err: Error, doc: DatabaseUserInterface) => {
       if (err) throw err;
       if (doc) res.send('User already exists');
       if (!doc) {
@@ -158,10 +171,10 @@ app.get('/user', (req, res) => {
 // clone() fixes MongooseError: Query was already executed bug
 // https://stackoverflow.com/a/69430142
 app.get('/getAllUsers', isAdminMiddleware, async (req, res) => {
-  await User.find({}, (err: Error, data: UserInterface[]) => {
+  await User.find({}, (err: Error, data: DatabaseUserInterface[]) => {
     if (err) throw err;
-    const filteredUsers: any = [];
-    data.forEach((datum: any) => {
+    const filteredUsers: UserInterface[] = [];
+    data.forEach((datum: DatabaseUserInterface) => {
       const userInformation = {
         id: datum._id,
         username: datum.username,
@@ -178,7 +191,7 @@ app.get('/getAllUsers', isAdminMiddleware, async (req, res) => {
 });
 
 app.post('/deleteUser', isAdminMiddleware, async (req, res) => {
-  const { id } = req.body;
+  const { id } = req?.body;
   await User.findByIdAndDelete(id, (err: Error) => {
     if (err) throw err;
     res.send('success');
